@@ -31,7 +31,7 @@ contract Raffle is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
     uint256 private lastTimeStamp;
     // Chainlink VRF Variables
     address private immutable vrfCoordinator;
-    uint64 private immutable subscriptionId;
+    uint256 private immutable subscriptionId;
     bytes32 private immutable keyHash;
     uint32 private constant callback_GasLimit = 100000;
     uint16 private constant request_Confirmations = 3;
