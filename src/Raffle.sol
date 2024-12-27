@@ -19,6 +19,7 @@ contract Raffle is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
         OPEN,
         CLOSED
     }
+    RaffleState private raffleState = RaffleState.OPEN;
 
     /**
      * State Variables *
@@ -35,8 +36,6 @@ contract Raffle is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
     uint32 private constant callback_GasLimit = 100000;
     uint16 private constant request_Confirmations = 3;
     uint32 private constant numberOfWords = 1;
-
-    RaffleState private raffleState = RaffleState.OPEN;
 
     event RaffleEnter(address indexed player, uint256 indexed value);
     event WinnerPicked(address winner);
@@ -58,7 +57,7 @@ contract Raffle is VRFConsumerBaseV2Plus, AutomationCompatibleInterface {
         // Chainlink VRF Variables
         address _vrfCoordinator,
         bytes32 _keyHash,
-        uint64 _subscriptionId
+        uint256 _subscriptionId
     ) VRFConsumerBaseV2Plus(_vrfCoordinator) {
         entranceFee = _entranceFee;
         interval = _interval;
