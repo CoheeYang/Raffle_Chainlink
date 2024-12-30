@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
-import {Script} from "forge-std/Script.sol";
+import {Script, console} from "forge-std/Script.sol";
 import {VRFCoordinatorV2_5Mock} from "@chainlink/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2_5Mock.sol";
+import {LinkToken} from "../test/mocks/LinkToken.sol";
 
 /**
  * @author  CoheeYang
@@ -26,6 +27,7 @@ contract HelperConfig is Script {
     uint96 public constant MOCK_GAS_PRICE_LINK = 1e9;
     int256 public constant MOCK_WEI_PER_UNIT_LINK = 4e15;
     VRFCoordinatorV2_5Mock vrf_Mock;
+    LinkToken linkToken_Mock;
 
     struct NetworkConfig {
         uint256 entranceFee;
@@ -34,6 +36,8 @@ contract HelperConfig is Script {
         address vrfCoordinator;
         bytes32 keyHash;
         uint256 subscriptionId;
+        address link;
+        address account;
     }
 
     mapping(uint256 => NetworkConfig) public networkConfigs;
@@ -52,11 +56,8 @@ contract HelperConfig is Script {
         if (networkConfigs[LOCAL_CHAIN_ID].vrfCoordinator == address(0)) {
             ///then we create a mock
             vm.startBroadcast();
-            vrf_Mock = new VRFCoordinatorV2_5Mock(
-                MOCK_BASE_FEE,
-                MOCK_GAS_PRICE_LINK,
-                MOCK_WEI_PER_UNIT_LINK
-            );
+            vrf_Mock = new VRFCoordinatorV2_5Mock(MOCK_BASE_FEE, MOCK_GAS_PRICE_LINK, MOCK_WEI_PER_UNIT_LINK);
+            linkToken_Mock = new LinkToken();
             vm.stopBroadcast();
         }
         return
@@ -65,7 +66,9 @@ contract HelperConfig is Script {
                 interval: 30, //30s
                 vrfCoordinator: address(vrf_Mock), //just created above
                 keyHash: 0x787d74caea10b2b357790d5b5247c2f63d1d91572a9846f780606e4d953677ae, //gasLane value does not matter in local chain
-                subscriptionId: 0
+                subscriptionId: 0,
+                link: address(linkToken_Mock), //the link token address
+                account: 0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38 //this is the defualt sender account address
             });
     }
 
@@ -81,7 +84,9 @@ contract HelperConfig is Script {
                 interval: 30, //30s
                 vrfCoordinator: 0x9DdfaCa8183c41ad55329BdeeD9F6A8d53168B1B, //see in https://docs.chain.link/vrf/v2-5/supported-networks
                 keyHash: 0x787d74caea10b2b357790d5b5247c2f63d1d91572a9846f780606e4d953677ae, //see in the same link, this is a 500 gwei Key Hash
-                subscriptionId: 97512311815449508538152162602758259522350113148636008968753952815105412830914 //subscriptionId of your own
+                subscriptionId: 97512311815449508538152162602758259522350113148636008968753952815105412830914, //subscriptionId of your own
+                link: 0x779877A7B0D9E8603169DdbD7836e478b4624789, //the link token address
+                account: 0xB36bbd58265B9D7BbdF3e1d142fA26CEc75BC073 //this our own account address
             });
     }
 }
